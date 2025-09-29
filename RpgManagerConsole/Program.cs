@@ -12,6 +12,16 @@ namespace RpgManagerConsole
                 PowerLevel = 9999, // over 9000
             };
 
+            try
+            {
+                Character.Damage(1000);
+            }
+            catch (DamageTooHighException e)
+            {
+                Console.WriteLine("Something went wrong: " + e.Message);
+            }
+
+
             Console.WriteLine(Character);
         }
     }
