@@ -7,6 +7,13 @@
         public DateTime CreationDate { get; set; }
         public int PowerLevel { get; set; }
 
+        public Character()
+        {
+            CreationDate = DateTime.Now;
+        }
+
+
+
         public override string ToString()
         {
             return $"{Name} (Health: {Health}, PowerLevel: {PowerLevel}, Created: {CreationDate})";
