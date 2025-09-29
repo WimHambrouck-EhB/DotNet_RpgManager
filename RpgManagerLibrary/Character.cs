@@ -10,10 +10,28 @@ namespace RpgManagerLibrary
         public DateTime CreationDate { get; set; }
         public int PowerLevel { get; set; }
 
+        /// <summary>
+        /// Instantiates a new Character with empty name and current date as creation date.
+        /// </summary>
         public Character()
         {
             Name = string.Empty;
             CreationDate = DateTime.Now;
+        }
+
+        /// <summary>
+        /// Instantiates a new Character with given name, health, creation date and power level.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="health"></param>
+        /// <param name="creationDate"></param>
+        /// <param name="powerLevel"></param>
+        public Character(string name, decimal health, DateTime creationDate, int powerLevel)
+        {
+            Name = name;
+            Health = health;
+            CreationDate = creationDate;
+            PowerLevel = powerLevel;
         }
 
         /// <summary>
