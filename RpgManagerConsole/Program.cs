@@ -7,19 +7,13 @@ namespace RpgManagerConsole
         private static Character Character = default!;
         static void Main(string[] args)
         {
-            Character = new Mage() { 
+            Character = new Warrior() { 
                 Name = "Wim",
                 PowerLevel = 9999, // over 9000
             };
 
-            try
-            {
-                Character.Damage(1000);
-            }
-            catch (DamageTooHighException e)
-            {
-                Console.WriteLine("Something went wrong: " + e.Message);
-            }
+            ((Warrior)Character).Weapons.Add("Sword");
+            ((Warrior)Character).Weapons.Add("Shield");
 
 
             Console.WriteLine(Character);

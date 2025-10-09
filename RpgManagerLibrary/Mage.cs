@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RpgManagerLibrary
+﻿namespace RpgManagerLibrary
 {
     public class Mage : Character
     {
@@ -18,6 +12,11 @@ namespace RpgManagerLibrary
         public Mage(string name, decimal health, DateTime creationDate, int powerLevel, int manaBoost) : base(name, health, creationDate, powerLevel)
         {
             ManaBoost = manaBoost;
+        }
+
+        override public string ToString()
+        {
+            return $"{base.ToString()}, ManaBoost: {ManaBoost}";
         }
     }
 }

@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RpgManagerLibrary
+﻿namespace RpgManagerLibrary
 {
     public class Warrior : Character
     {
@@ -17,6 +10,11 @@ namespace RpgManagerLibrary
 
         public Warrior(string name, decimal health, DateTime creationDate, int powerLevel) : base(name, health, creationDate, powerLevel)
         {
+        }
+
+        override public string ToString()
+        {
+            return $"{base.ToString()}, Weapons: [{string.Join(", ", Weapons)}]";
         }
     }
 }
