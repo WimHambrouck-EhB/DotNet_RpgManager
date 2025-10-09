@@ -8,6 +8,6 @@ namespace RpgManagerLibrary
 {
     internal class Mage : Character
     {
-        public List<string> Weapons { get; set; } = [];
+        public int ManaBoost { get; set; }
     }
 }
