@@ -7,7 +7,7 @@ namespace RpgManagerConsole
         private static Character Character = default!;
         static void Main(string[] args)
         {
-            Character = new() { 
+            Character = new Mage() { 
                 Name = "Wim",
                 PowerLevel = 9999, // over 9000
             };
