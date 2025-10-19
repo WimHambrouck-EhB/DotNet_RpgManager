@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32.SafeHandles;
 using RpgManagerLibrary;
+using System.Net.WebSockets;
 using System.Threading;
 using System.Xml;
 
@@ -15,12 +16,10 @@ namespace RpgManagerConsole
 
         static void Main(string[] args)
         {
-            Warrior warrior = new("ZARKAN, the DESTOYER!", 150, DateTime.Now, 100, CurrentPlayer);
+            Warrior warrior = new("ZARKAN, the DESTROYER!", 150, DateTime.Now, 100, CurrentPlayer);
             warrior.Weapons.Add("Sword of a Thousand Truths");
             warrior.Weapons.Add("Sting");
             warrior.Weapons.Add("Aperture Science Handheld Portal Device");
-
-
             Characters.Add(warrior);
             
             bool continueApp = true;
@@ -35,7 +34,8 @@ namespace RpgManagerConsole
                       "Heal",
                       "Damage",
                       "New Character",
-                      "Switch Character"
+                      "Switch Character",
+                      "Switch Player",
                     ],
                     "Quit");
 
@@ -156,11 +156,9 @@ namespace RpgManagerConsole
 
         private static void HealCharacter()
         {
-            int healAmount = ConsoleHelper.ReadInt("Enter amount to heal (1 - 1000, 0 to cancel) [0]: ", 1, 1000);
+            int healAmount = ConsoleHelper.ReadInt("Enter amount to heal (1 - 1000, 0 to cancel) [0]: ", 1, 1000, 0);
             CurrentCharacter.Heal(healAmount);
         }
-
-
 
         /// <summary>
         /// Print details van het personage (ToString) bovenaan de console.
@@ -180,7 +178,7 @@ namespace RpgManagerConsole
             Console.ForegroundColor = ConsoleColor.White;
             (int Left, int Top) = ConsoleHelper.DrawBox(CurrentCharacter.ToString(), doubleLines: true, fullWidth: true, textColour: textColour);
             DrawTitle(Left, Top);
-            DrawPlayerInfo();
+            DrawPlayerInfo(Left, Top);
         }
 
         private static void DrawTitle(int left, int top)
@@ -193,12 +191,18 @@ namespace RpgManagerConsole
             Console.Write("╞");
             Console.ResetColor();
             Console.SetCursorPosition(left, top);
-
         }
 
-        private static void DrawPlayerInfo()
+        private static void DrawPlayerInfo(int left, int top)
         {
-            ConsoleHelper.DrawBox($"Player: {CurrentPlayer}", fullWidth: true);
+            Console.SetCursorPosition(left, top - 1);
+            (int NextLeft, int NextTop) = ConsoleHelper.DrawBox($"Player: {CurrentPlayer}", doubleLines: true, fullWidth: true);
+            Console.SetCursorPosition(left, top - 1);
+            Console.Write("╟");
+            Console.Write(new string('─', Console.WindowWidth - 2));
+            Console.SetCursorPosition(Console.WindowWidth - 1, top - 1);
+            Console.WriteLine("╢");
+            Console.SetCursorPosition(NextLeft, NextTop);
         }
     }
 }
