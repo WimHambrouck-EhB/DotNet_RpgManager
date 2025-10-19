@@ -99,22 +99,18 @@ namespace RpgManagerConsole
         /// <returns>The integer entered by the user.</returns>
         public static int ReadInt(string prompt, int min = int.MinValue, int max = int.MaxValue)
         {
-            Console.Write(prompt);
-            string? consoleInput = Console.ReadLine();
             int input;
 
-            while (!int.TryParse(consoleInput, out input) || input < min || input > max)
+            while (!int.TryParse(ReadLine(prompt), out input) || input < min || input > max)
             {
                 ShowError("Invalid input!");
-                Console.Write(prompt);
-                consoleInput = Console.ReadLine();
             }
 
             return input;
         }
 
         /// <summary>
-        /// Reads a non-empty string input.
+        /// Reads a non-empty string input from the console.
         /// </summary>
         /// <remarks>If the user enters an empty or whitespace-only input, an error message is displayed,
         /// and the prompt is repeated until valid input is provided.</remarks>
@@ -122,30 +118,69 @@ namespace RpgManagerConsole
         /// <returns>The string entered by the user. The returned string is guaranteed to be non-null and non-whitespace.</returns>
         public static string ReadString(string prompt)
         {
-            Console.Write(prompt);
-            string? consoleInput = Console.ReadLine();
+            string? consoleInput;
 
-            while (string.IsNullOrWhiteSpace(consoleInput))
+            while (string.IsNullOrWhiteSpace(consoleInput = ReadLine(prompt)))
             {
                 ShowError("Invalid input!");
-                Console.Write(prompt);
-                consoleInput = Console.ReadLine();
             }
 
             return consoleInput;
         }
 
+
+        private static string? ReadLine(string prompt)
+        {
+            return ReadFromConsole(prompt);
+        }
+
+        private static string? ReadLine(string prompt, ConsoleColor inputColor)
+        {
+            return ReadFromConsole(prompt, inputColor);
+        }
+
+        public static char ReadChar(string prompt)
+        {
+            return ReadFromConsole(prompt, readKey: true)[0];
+        }
+
+        public static char ReadChar(string prompt, ConsoleColor inputColor)
+        {            
+            return ReadFromConsole(prompt, inputColor, true)[0];
+        }
+
+        private static string ReadFromConsole(string prompt, ConsoleColor inputColor = ConsoleColor.White, bool readKey = false)
+        {
+            ConsoleColor currentColor = Console.ForegroundColor;
+            Console.Write(prompt);
+            Console.ForegroundColor = inputColor;
+
+            string? output;
+            if (readKey)
+            {
+                output = Console.ReadKey().Key.ToString();
+            }
+            else
+            {
+                output = Console.ReadLine() ?? "";
+            }
+
+            Console.ForegroundColor = currentColor;
+            return output;
+        }
+
+
         /// <summary>
         /// Displays an error message in a specified color.
         /// </summary>
         /// <param name="message">The message to display.</param>
-        /// <param name="errorColour">The <see cref="ConsoleColor"/> to display the message in (defaults to <see cref="ConsoleColor.Red"/>.</param>
-        public static void ShowError(string message, ConsoleColor errorColour = ConsoleColor.Red)
+        /// <param name="errorColour">The <see cref="ConsoleColor"/> to display the message in (defaults to <see cref="ConsoleColor.DarkRed"/>.</param>
+        public static void ShowError(string message, ConsoleColor errorColour = ConsoleColor.DarkRed)
         {
             Console.ForegroundColor = errorColour;
             Console.WriteLine(message);
             Console.WriteLine();
-            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.ResetColor();
         }
 
     }

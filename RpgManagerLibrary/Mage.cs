@@ -16,7 +16,7 @@
 
         override public string ToString()
         {
-            return $"{base.ToString()}, ManaBoost: {ManaBoost}";
+            return $"{base.ToString()} / ManaBoost: {ManaBoost}";
         }
     }
 }

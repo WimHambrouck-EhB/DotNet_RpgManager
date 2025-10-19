@@ -67,7 +67,7 @@ namespace RpgManagerLibrary
             // :N2 maakt dat healt wordt geformatteerd als nummer en max 2 cijfers na de komma laat zien
             // cf.: https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings#numeric-format-specifier-n
             return $"{Name} – {GetType().Name} {Environment.NewLine}" +
-                $"Health: {Health:N2}, PowerLevel: {PowerLevel}, Created: {CreationDate.ToShortDateString()}";
+                $"Health: {Health:N2} / PowerLevel: {PowerLevel} / Created: {CreationDate.ToShortDateString()}";
         }
     }
 }

@@ -14,7 +14,7 @@
 
         override public string ToString()
         {
-            return $"{base.ToString()}, Weapons: [{string.Join(", ", Weapons)}]";
+            return $"{base.ToString()} / Weapons: [{string.Join(", ", Weapons)}]";
         }
     }
 }
