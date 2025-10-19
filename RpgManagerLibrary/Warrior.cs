@@ -6,17 +6,17 @@
 
         public override string CharacterType => "Warrior";
 
-        public Warrior()
+        public Warrior(Player player) : base(player)
         {
         }
 
-        public Warrior(string name, decimal health, DateTime creationDate, int powerLevel) : base(name, health, powerLevel, creationDate)
+        public Warrior(string name, decimal health, DateTime creationDate, int powerLevel, Player player) : base(name, health, player, powerLevel, creationDate)
         {
         }
 
         override public string ToString()
         {
-            return $"{base.ToString()} / Weapons: [{string.Join(", ", Weapons)}]";
+            return $"{base.ToString()}{Environment.NewLine}Weapons: {string.Join(", ", Weapons)}";
         }
     }
 }

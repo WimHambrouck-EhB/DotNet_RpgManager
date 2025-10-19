@@ -23,7 +23,7 @@ namespace RpgManagerConsole
         /// <param name="doubleLines">Whether the box should use double-line characters or not. The default is false.</param>
         /// <param name="fullWidth">Whether the box should span the full width of the console window. The default is false. If true, <paramref name="padding"/> automatically becomes 0.</param>
         /// <param name="padding">The amount of padding (in spaces) to add on each side of the title text. The default is 7 (or 0 if <paramref name="fullWidth"/> = true).</param>
-        public static void DrawBox(string title, bool doubleLines = false, bool fullWidth = false, int padding = 7)
+        public static (int Left, int Top) DrawBox(string title, bool doubleLines = false, bool fullWidth = false, int padding = 7, ConsoleColor? textColour = null)
         {
             string[] lines = title.Split(Environment.NewLine, StringSplitOptions.TrimEntries);
 
@@ -31,7 +31,7 @@ namespace RpgManagerConsole
             {
                 if (line.Length > MaxTitleLength - padding * 2)
                 {
-                    return;
+                    return (0, 0);
                     //throw new ArgumentException($"A title line exceeds maximum length of {MaxTitleLength} characters.", nameof(title));
                 }
             }
@@ -62,13 +62,26 @@ namespace RpgManagerConsole
             {
                 int leftPadding = padding + (maxLineLength - line.Length) / 2; // Center each line
                 int rightPadding = padding + (maxLineLength - line.Length + 1) / 2; // Adjust for odd lengths
-                Console.WriteLine($"{chars.Vertical}{new string(' ', leftPadding)}{line}{new string(' ', rightPadding)}{chars.Vertical}");
+                Console.Write($"{chars.Vertical}{new string(' ', leftPadding)}");
+
+                ConsoleColor currentColor = Console.ForegroundColor;
+
+                if (textColour != null)
+                {
+                    Console.ForegroundColor = textColour.Value;
+                }
+
+                Console.Write(line);
+                Console.ForegroundColor = currentColor;
+                Console.WriteLine($"{new string(' ', rightPadding)}{chars.Vertical}");
             }
 
             // onderste lijn
             Console.Write(chars.LowerLeft);
             Console.Write(new string(chars.Horizontal, totalWidth));
             Console.WriteLine(chars.LowerRight);
+
+            return Console.GetCursorPosition();
         }
 
         /// <summary>
@@ -113,7 +126,7 @@ namespace RpgManagerConsole
                     continue;
                 }
 
-                return input; 
+                return input;
             }
         }
 
@@ -153,7 +166,7 @@ namespace RpgManagerConsole
         }
 
         public static char ReadChar(string prompt, ConsoleColor inputColor)
-        {            
+        {
             return ReadFromConsole(prompt, inputColor, true)[0];
         }
 

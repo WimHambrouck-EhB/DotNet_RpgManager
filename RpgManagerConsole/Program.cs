@@ -7,10 +7,22 @@ namespace RpgManagerConsole
 {
     internal class Program
     {
-        private static Character CurrentCharacter = new Mage("Wim", 100, DateTime.Now, 9999, 10);
+        private static Player CurrentPlayer = new("Wim", "Hambrouck");
+        private static Character CurrentCharacter = new Mage("Wim", 100, DateTime.Now, 9999, 10, CurrentPlayer);
+
         private static readonly List<Character> Characters = [CurrentCharacter];
+        private static readonly List<Player> Players = [CurrentPlayer];
+
         static void Main(string[] args)
         {
+            Warrior warrior = new("ZARKAN, the DESTOYER!", 150, DateTime.Now, 100, CurrentPlayer);
+            warrior.Weapons.Add("Sword of a Thousand Truths");
+            warrior.Weapons.Add("Sting");
+            warrior.Weapons.Add("Aperture Science Handheld Portal Device");
+
+
+            Characters.Add(warrior);
+            
             bool continueApp = true;
             while (continueApp)
             {
@@ -98,7 +110,7 @@ namespace RpgManagerConsole
         private static void NewWarrior()
         {
             string warriorName = ConsoleHelper.ReadString("What should this fearsome warrior be called? ");
-            Warrior warrior = new(warriorName, 100, DateTime.Now, 9999);
+            Warrior warrior = new(warriorName, 100, DateTime.Now, 9999, CurrentPlayer);
 
             string weapon = ConsoleHelper.ReadString("Add weapon (type weapon name or Q to quit): ");
             while (!weapon.Equals("Q", StringComparison.CurrentCultureIgnoreCase))
@@ -113,7 +125,7 @@ namespace RpgManagerConsole
         private static void NewMage()
         {
             string mageName = ConsoleHelper.ReadString("What should this mystical mage be called? ");
-            CurrentCharacter = new Mage(mageName, 100, DateTime.Now, 9999, 10);
+            CurrentCharacter = new Mage(mageName, 100, DateTime.Now, 9999, 10, CurrentPlayer);
             Characters.Add(CurrentCharacter);
         }
 
@@ -148,7 +160,30 @@ namespace RpgManagerConsole
             CurrentCharacter.Heal(healAmount);
         }
 
-        private static void DrawTitle()
+
+
+        /// <summary>
+        /// Print details van het personage (ToString) bovenaan de console.
+        /// </summary>
+        private static void WriteHeader()
+        {
+            Console.SetCursorPosition(0, 0);
+            ConsoleColor textColour = ConsoleColor.White;
+            if (CurrentCharacter.CharacterType == "Mage")
+            {
+                textColour = ConsoleColor.Blue;
+            }
+            else if (CurrentCharacter.CharacterType == "Warrior")
+            {
+                textColour = ConsoleColor.Red;
+            }
+            Console.ForegroundColor = ConsoleColor.White;
+            (int Left, int Top) = ConsoleHelper.DrawBox(CurrentCharacter.ToString(), doubleLines: true, fullWidth: true, textColour: textColour);
+            DrawTitle(Left, Top);
+            DrawPlayerInfo();
+        }
+
+        private static void DrawTitle(int left, int top)
         {
             Console.SetCursorPosition(2, 0);
             Console.Write("╡");
@@ -157,18 +192,13 @@ namespace RpgManagerConsole
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write("╞");
             Console.ResetColor();
-            Console.SetCursorPosition(0, 4);
+            Console.SetCursorPosition(left, top);
+
         }
 
-        /// <summary>
-        /// Print details van het personage (ToString) bovenaan de console.
-        /// </summary>
-        private static void WriteHeader()
+        private static void DrawPlayerInfo()
         {
-            Console.SetCursorPosition(0, 0);
-            Console.ForegroundColor = ConsoleColor.White;
-            ConsoleHelper.DrawBox(CurrentCharacter.ToString(), doubleLines: true, fullWidth: true);
-            DrawTitle();
+            ConsoleHelper.DrawBox($"Player: {CurrentPlayer}", fullWidth: true);
         }
     }
 }

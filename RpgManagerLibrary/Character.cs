@@ -9,12 +9,14 @@ namespace RpgManagerLibrary
         public DateTime CreationDate { get; set; }
         public int PowerLevel { get; set; }
 
+        public Player Player { get; set; }
+
         public abstract string CharacterType { get; }
 
         /// <summary>
         /// Instantiates a new Character with empty name, health of 100 and current date as creation date.
         /// </summary>
-        public Character() : this(string.Empty, 100)
+        public Character(Player player) : this(string.Empty, 100, player)
         {
         }
 
@@ -25,12 +27,13 @@ namespace RpgManagerLibrary
         /// <param name="health"></param>
         /// <param name="creationDate"></param>
         /// <param name="powerLevel"></param>
-        public Character(string name, decimal health, int powerLevel = 0, DateTime? creationDate = null)
+        public Character(string name, decimal health, Player player, int powerLevel = 0, DateTime? creationDate = null)
         {
             Name = name;
             Health = health;
             CreationDate = creationDate ?? DateTime.Now;
             PowerLevel = powerLevel;
+            Player = player;
         }
 
         /// <summary>

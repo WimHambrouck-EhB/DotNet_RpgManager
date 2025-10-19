@@ -6,12 +6,12 @@
 
         public override string CharacterType => "Mage";
 
-        public Mage()
+        public Mage(Player player) : base(player)
         {
             
         }
 
-        public Mage(string name, decimal health, DateTime creationDate, int powerLevel, int manaBoost) : base(name, health, powerLevel, creationDate)
+        public Mage(string name, decimal health, DateTime creationDate, int powerLevel, int manaBoost, Player player) : base(name, health, player, powerLevel, creationDate)
         {
             ManaBoost = manaBoost;
         }
