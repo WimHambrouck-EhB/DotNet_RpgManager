@@ -77,11 +77,11 @@ namespace RpgManagerConsole
         /// <param name="options">Options to display in the menu.</param>
         /// <param name="exitOption">Name for the exit option (always displayed on the bottom as option #0)</param>
         /// <returns></returns>
-        public static int Menu(List<string> options, string exitOption)
+        public static int Menu(IList<string> options, string exitOption)
         {
             for (int i = 0; i < options.Count; i++)
             {
-                Console.WriteLine($"{i + 1} - {options[i]}");
+                Console.WriteLine($"{i + 1} - {options.ElementAt(i)}");
             }
             Console.WriteLine("0 - " + exitOption);
 

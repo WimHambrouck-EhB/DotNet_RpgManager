@@ -1,16 +1,16 @@
 ﻿using Microsoft.Win32.SafeHandles;
 using RpgManagerLibrary;
+using System.Threading;
 using System.Xml;
 
 namespace RpgManagerConsole
 {
     internal class Program
     {
-        private static Character Character = default!;
+        private static Character CurrentCharacter = new Mage("Wim", 100, DateTime.Now, 9999, 10);
+        private static readonly List<Character> Characters = [CurrentCharacter];
         static void Main(string[] args)
         {
-            Character = new Mage("Wim", 100, DateTime.Now, 9999, 10);
-
             bool continueApp = true;
             while (continueApp)
             {
@@ -23,6 +23,7 @@ namespace RpgManagerConsole
                       "Heal",
                       "Damage",
                       "New Character",
+                      "Switch Character"
                     ],
                     "Quit");
 
@@ -35,7 +36,10 @@ namespace RpgManagerConsole
                         DamageCharacter();
                         break;
                     case 3:
-                        NewCharacter();
+                        AddCharacter();
+                        break;
+                    case 4:
+                        SwitchCharacter();
                         break;
                     default:
                         continueApp = false;
@@ -47,7 +51,35 @@ namespace RpgManagerConsole
             Console.WriteLine("Bye!");
         }
 
-        private static void NewCharacter()
+        private static void SwitchCharacter()
+        {
+            Console.Clear();
+            WriteHeader();
+
+            ConsoleHelper.DrawBox("Switch Character", fullWidth: true);
+            ConsoleHelper.DrawBox("Select a character to switch to", padding: 1);
+
+            // Aanmaken van de lijst kan gemakkelijker met LINQ, maar dat is op dit punt in de cursus nog niet behandeld.
+            // Ter referentie, volgende 5 regels kunnen vervangen worden door:
+            //      List<string> characterNames = Characters.Select(c => $"{c.Name} ({c.CharacterType})").ToList();
+            List<string> characterNames = [];
+            foreach (Character character in Characters)
+            {
+                characterNames.Add($"{character.Name} ({character.CharacterType})");
+            }
+
+            int keuze = ConsoleHelper.Menu(characterNames, "Cancel");
+
+            // OPGLET: De Menu-methode controleert op juiste invoer, als je rechtstreeks invoer van de Console zou lezen,
+            // dan zou je hier extra validatie moeten toevoegen (keuze >=1 && keuze <= Characters.Count)
+            // om ervoor te zorgen dat je niet buiten de grenzen van de lijst gaat.
+            if (keuze != 0)
+            {
+                CurrentCharacter = Characters[keuze - 1];
+            }
+        }
+
+        private static void AddCharacter()
         {
             ConsoleHelper.DrawBox("Create new Character");
             switch (ConsoleHelper.Menu(["Mage", "Warrior"], "Cancel"))
@@ -59,7 +91,7 @@ namespace RpgManagerConsole
                     NewWarrior();
                     break;
                 default:
-                    break;
+                    return;
             }
         }
 
@@ -74,13 +106,15 @@ namespace RpgManagerConsole
                 warrior.Weapons.Add(weapon);
                 weapon = ConsoleHelper.ReadString("Add weapon: ");
             }
-            Character = warrior;
+            CurrentCharacter = warrior;
+            Characters.Add(CurrentCharacter);
         }
 
         private static void NewMage()
         {
             string mageName = ConsoleHelper.ReadString("What should this mystical mage be called? ");
-            Character = new Mage(mageName, 100, DateTime.Now, 9999, 10);
+            CurrentCharacter = new Mage(mageName, 100, DateTime.Now, 9999, 10);
+            Characters.Add(CurrentCharacter);
         }
 
         private static void DamageCharacter()
@@ -92,7 +126,7 @@ namespace RpgManagerConsole
                 int damageAmount = ConsoleHelper.ReadInt("Enter amount of damage (1 - 1000, 0 to cancel) [0]: ", 1, 1000, 0);
                 try
                 {
-                    Character.Damage(damageAmount);
+                    CurrentCharacter.Damage(damageAmount);
                     continueLoop = false;
                 }
                 catch (DamageTooHighException e)
@@ -111,7 +145,7 @@ namespace RpgManagerConsole
         private static void HealCharacter()
         {
             int healAmount = ConsoleHelper.ReadInt("Enter amount to heal (1 - 1000, 0 to cancel) [0]: ", 1, 1000);
-            Character.Heal(healAmount);
+            CurrentCharacter.Heal(healAmount);
         }
 
         private static void DrawTitle()
@@ -123,7 +157,7 @@ namespace RpgManagerConsole
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write("╞");
             Console.ResetColor();
-            Console.SetCursorPosition(0, 5);
+            Console.SetCursorPosition(0, 4);
         }
 
         /// <summary>
@@ -133,7 +167,7 @@ namespace RpgManagerConsole
         {
             Console.SetCursorPosition(0, 0);
             Console.ForegroundColor = ConsoleColor.White;
-            ConsoleHelper.DrawBox(Character.ToString(), doubleLines: true, fullWidth: true);
+            ConsoleHelper.DrawBox(CurrentCharacter.ToString(), doubleLines: true, fullWidth: true);
             DrawTitle();
         }
     }
