@@ -97,16 +97,24 @@ namespace RpgManagerConsole
         /// <param name="min">Minimum valid value. Defaults to <see cref="int.MinValue"/>.</param>
         /// <param name="max">Maximum valid value. Defaults to <see cref="int.MaxValue"/>.</param>
         /// <returns>The integer entered by the user.</returns>
-        public static int ReadInt(string prompt, int min = int.MinValue, int max = int.MaxValue)
+        public static int ReadInt(string prompt, int min = int.MinValue, int max = int.MaxValue, int? defaultValue = null)
         {
-            int input;
-
-            while (!int.TryParse(ReadLine(prompt), out input) || input < min || input > max)
+            while (true)
             {
-                ShowError("Invalid input!");
-            }
+                string userInput = ReadLine(prompt);
+                if (string.IsNullOrWhiteSpace(userInput) && defaultValue != null)
+                {
+                    return defaultValue.Value;
+                }
 
-            return input;
+                if (!int.TryParse(userInput, out int input) || (input != defaultValue && (input < min || input > max)))
+                {
+                    ShowError("Invalid input!");
+                    continue;
+                }
+
+                return input; 
+            }
         }
 
         /// <summary>
@@ -129,12 +137,12 @@ namespace RpgManagerConsole
         }
 
 
-        private static string? ReadLine(string prompt)
+        private static string ReadLine(string prompt)
         {
             return ReadFromConsole(prompt);
         }
 
-        private static string? ReadLine(string prompt, ConsoleColor inputColor)
+        private static string ReadLine(string prompt, ConsoleColor inputColor)
         {
             return ReadFromConsole(prompt, inputColor);
         }

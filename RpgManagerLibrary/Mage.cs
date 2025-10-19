@@ -4,6 +4,8 @@
     {
         public int ManaBoost { get; set; }
 
+        public override string CharacterType => "Mage";
+
         public Mage()
         {
             

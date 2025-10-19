@@ -53,22 +53,34 @@ namespace RpgManagerConsole
             switch (ConsoleHelper.Menu(["Mage", "Warrior"], "Cancel"))
             {
                 case 1:
-                    string mageName = ConsoleHelper.ReadString("Name: ");
-                    Character = new Mage(mageName, 100, DateTime.Now, 9999, 10);
+                    NewMage();
                     break;
                 case 2:
-                    string warriorName = ConsoleHelper.ReadString("Name: ");
-                    Character = new Warrior(warriorName, 100, DateTime.Now, 9999);
-                    string weapon = ConsoleHelper.ReadString("Add weapon (type weapon name or Q to quit): ");
-                    while (!weapon.Equals("Q", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        ((Warrior)Character).Weapons.Add(weapon);
-                        weapon = ConsoleHelper.ReadString("Add weapon: ");
-                    }
+                    NewWarrior();
                     break;
                 default:
                     break;
             }
+        }
+
+        private static void NewWarrior()
+        {
+            string warriorName = ConsoleHelper.ReadString("What should this fearsome warrior be called? ");
+            Warrior warrior = new(warriorName, 100, DateTime.Now, 9999);
+
+            string weapon = ConsoleHelper.ReadString("Add weapon (type weapon name or Q to quit): ");
+            while (!weapon.Equals("Q", StringComparison.CurrentCultureIgnoreCase))
+            {
+                warrior.Weapons.Add(weapon);
+                weapon = ConsoleHelper.ReadString("Add weapon: ");
+            }
+            Character = warrior;
+        }
+
+        private static void NewMage()
+        {
+            string mageName = ConsoleHelper.ReadString("What should this mystical mage be called? ");
+            Character = new Mage(mageName, 100, DateTime.Now, 9999, 10);
         }
 
         private static void DamageCharacter()
@@ -77,7 +89,7 @@ namespace RpgManagerConsole
 
             while (continueLoop)
             {
-                int damageAmount = ConsoleHelper.ReadInt("Enter amount of damage [1 - 1000]: ", 1, 1000);
+                int damageAmount = ConsoleHelper.ReadInt("Enter amount of damage (1 - 1000, 0 to cancel) [0]: ", 1, 1000, 0);
                 try
                 {
                     Character.Damage(damageAmount);
@@ -86,7 +98,7 @@ namespace RpgManagerConsole
                 catch (DamageTooHighException e)
                 {
                     ConsoleHelper.ShowError(e.Message);
-                    char retry = ConsoleHelper.ReadChar("Do you want to try again? (Y/N): ");
+                    char retry = ConsoleHelper.ReadChar("Do you want to try again? (Y/N) [N]: ");
                     Console.WriteLine();
                     if (retry != 'Y')
                     {
@@ -98,7 +110,7 @@ namespace RpgManagerConsole
 
         private static void HealCharacter()
         {
-            int healAmount = ConsoleHelper.ReadInt("Enter amount to heal [1 - 1000]: ", 1, 1000);
+            int healAmount = ConsoleHelper.ReadInt("Enter amount to heal (1 - 1000, 0 to cancel) [0]: ", 1, 1000);
             Character.Heal(healAmount);
         }
 

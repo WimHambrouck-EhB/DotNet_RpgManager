@@ -4,6 +4,8 @@
     {
         public List<string> Weapons { get; set; } = [];
 
+        public override string CharacterType => "Warrior";
+
         public Warrior()
         {
         }

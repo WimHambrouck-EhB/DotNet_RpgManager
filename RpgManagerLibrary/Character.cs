@@ -1,13 +1,15 @@
 ﻿
 namespace RpgManagerLibrary
 {
-    public class Character
+    public abstract class Character
     {
         private const int MinimumHealth = -100;
         public string Name { get; set; }
         public decimal Health { get; private set; }
         public DateTime CreationDate { get; set; }
         public int PowerLevel { get; set; }
+
+        public abstract string CharacterType { get; }
 
         /// <summary>
         /// Instantiates a new Character with empty name, health of 100 and current date as creation date.
@@ -66,7 +68,7 @@ namespace RpgManagerLibrary
         {
             // :N2 maakt dat healt wordt geformatteerd als nummer en max 2 cijfers na de komma laat zien
             // cf.: https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings#numeric-format-specifier-n
-            return $"{Name} – {GetType().Name} {Environment.NewLine}" +
+            return $"{Name} – {CharacterType} {Environment.NewLine}" +
                 $"Health: {Health:N2} / PowerLevel: {PowerLevel} / Created: {CreationDate.ToShortDateString()}";
         }
     }
