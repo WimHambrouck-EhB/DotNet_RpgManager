@@ -18,13 +18,24 @@ namespace RpgManagerConsole
                 WriteHeader();
 
                 ConsoleHelper.DrawBox("Menu");
-                switch (ConsoleHelper.Menu(["Heal", "Damage"], "Quit"))
+                int keuze = ConsoleHelper.Menu(
+                    [
+                      "Heal",
+                      "Damage",
+                      "New Character",
+                    ],
+                    "Quit");
+
+                switch (keuze)
                 {
                     case 1:
                         HealCharacter();
                         break;
                     case 2:
                         DamageCharacter();
+                        break;
+                    case 3:
+                        NewCharacter();
                         break;
                     default:
                         continueApp = false;
@@ -34,6 +45,30 @@ namespace RpgManagerConsole
 
             Console.ResetColor();
             Console.WriteLine("Bye!");
+        }
+
+        private static void NewCharacter()
+        {
+            ConsoleHelper.DrawBox("Create new Character");
+            switch (ConsoleHelper.Menu(["Mage", "Warrior"], "Cancel"))
+            {
+                case 1:
+                    string mageName = ConsoleHelper.ReadString("Name: ");
+                    Character = new Mage(mageName, 100, DateTime.Now, 9999, 10);
+                    break;
+                case 2:
+                    string warriorName = ConsoleHelper.ReadString("Name: ");
+                    Character = new Warrior(warriorName, 100, DateTime.Now, 9999);
+                    string weapon = ConsoleHelper.ReadString("Add weapon (type weapon name or Q to quit): ");
+                    while (!weapon.Equals("Q", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        ((Warrior)Character).Weapons.Add(weapon);
+                        weapon = ConsoleHelper.ReadString("Add weapon: ");
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
 
         private static void DamageCharacter()
@@ -59,8 +94,6 @@ namespace RpgManagerConsole
                     }
                 }
             }
-
-
         }
 
         private static void HealCharacter()
