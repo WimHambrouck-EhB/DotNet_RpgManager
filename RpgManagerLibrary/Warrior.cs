@@ -8,7 +8,7 @@
         {
         }
 
-        public Warrior(string name, decimal health, DateTime creationDate, int powerLevel) : base(name, health, creationDate, powerLevel)
+        public Warrior(string name, decimal health, DateTime creationDate, int powerLevel) : base(name, health, powerLevel, creationDate)
         {
         }
 

@@ -9,7 +9,7 @@
             
         }
 
-        public Mage(string name, decimal health, DateTime creationDate, int powerLevel, int manaBoost) : base(name, health, creationDate, powerLevel)
+        public Mage(string name, decimal health, DateTime creationDate, int powerLevel, int manaBoost) : base(name, health, powerLevel, creationDate)
         {
             ManaBoost = manaBoost;
         }
