@@ -196,6 +196,7 @@ namespace RpgManagerConsole
         private static void DrawPlayerInfo(int left, int top)
         {
             Console.SetCursorPosition(left, top - 1);
+            Console.ForegroundColor = ConsoleColor.White;
             (int NextLeft, int NextTop) = ConsoleHelper.DrawBox($"Player: {CurrentPlayer}", doubleLines: true, fullWidth: true);
             Console.SetCursorPosition(left, top - 1);
             Console.Write("╟");
@@ -203,6 +204,7 @@ namespace RpgManagerConsole
             Console.SetCursorPosition(Console.WindowWidth - 1, top - 1);
             Console.WriteLine("╢");
             Console.SetCursorPosition(NextLeft, NextTop);
+            Console.ResetColor();
         }
     }
 }

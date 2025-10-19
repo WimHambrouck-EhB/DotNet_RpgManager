@@ -12,11 +12,6 @@ namespace RpgManagerConsole
         private static readonly BoxCharacters DoubleLine = new(Horizontal: '═', Vertical: '║', UpperLeft: '╔', LowerLeft: '╚', UpperRight: '╗', LowerRight: '╝');
 
         /// <summary>
-        /// Width of the console window minus 2 (for box borders).
-        /// </summary>
-        private static readonly int MaxTitleLength = Console.WindowWidth - 2;
-
-        /// <summary>
         /// Draws a box around the specified title, with an optional style for single or double lines. Fails silently if title is too long.
         /// </summary>
         /// <param name="title">The text to display inside the box.</param>
@@ -24,19 +19,20 @@ namespace RpgManagerConsole
         /// <param name="fullWidth">Whether the box should span the full width of the console window. The default is false. If true, <paramref name="padding"/> automatically becomes 0.</param>
         /// <param name="padding">The amount of padding (in spaces) to add on each side of the title text. The default is 7 (or 0 if <paramref name="fullWidth"/> = true).</param>
         public static (int Left, int Top) DrawBox(string title, bool doubleLines = false, bool fullWidth = false, int padding = 7, ConsoleColor? textColour = null)
-        {
+        {       
+            int maxTitleLength = Console.WindowWidth - 2; // Width of the console window minus 2 (for box borders)
             string[] lines = title.Split(Environment.NewLine, StringSplitOptions.TrimEntries);
 
             foreach (string line in lines)
             {
-                if (line.Length > MaxTitleLength - padding * 2)
+                if (line.Length > maxTitleLength - padding * 2)
                 {
                     return (0, 0);
                     //throw new ArgumentException($"A title line exceeds maximum length of {MaxTitleLength} characters.", nameof(title));
                 }
             }
 
-            int maxLineLength = MaxTitleLength;
+            int maxLineLength = maxTitleLength;
             int totalWidth = maxLineLength;
 
             if (fullWidth)
