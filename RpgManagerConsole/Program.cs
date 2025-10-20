@@ -12,14 +12,14 @@ namespace RpgManagerConsole
 
         static void Main(string[] args)
         {
-            Players.Add(new Player("Jan", "Janssens"));
-
-            Warrior warrior = new("ZARKAN, the DESTROYER!", 150, DateTime.Now, 100, Players.Last());
+            Warrior warrior = new("ZARKAN, the DESTROYER!", 150, DateTime.Now, 100, CurrentPlayer);
             warrior.Weapons.Add("Sword of a Thousand Truths");
             warrior.Weapons.Add("Sting");
             warrior.Weapons.Add("Aperture Science Handheld Portal Device");
             Characters.Add(warrior);
 
+            Player player2 = new("Anna", "Smith");
+            Players.Add(player2);
 
             bool continueApp = true;
             while (continueApp)
@@ -48,10 +48,13 @@ namespace RpgManagerConsole
                         DamageCharacter();
                         break;
                     case 3:
-                        AddCharacter();
+                        AddCharacterForPlayer(CurrentPlayer);
                         break;
                     case 4:
                         SwitchCharacter();
+                        break;
+                    case 5:
+                        AddPlayer();
                         break;
                     case 6:
                         SwitchPlayer();
@@ -66,52 +69,73 @@ namespace RpgManagerConsole
             Console.WriteLine("Bye!");
         }
 
-        private static void SwitchPlayer()
+        private static void HealCharacter()
         {
-            // same as SwitchCharacter but for players
-            Console.Clear();
-            ConsoleDraw.WriteHeader(CurrentCharacter, CurrentPlayer);
-            ConsoleDraw.DrawBox("Switch Player", fullWidth: true);
-            ConsoleDraw.DrawBox("Select a player to switch to", padding: 1);
-            List<string> playerNames = [];
-            foreach (Player player in Players)
-            {
-                playerNames.Add(player.ToString());
-            }
-            int keuze = ConsoleInput.Menu(playerNames, "Cancel");
+            int healAmount = ConsoleInput.ReadInt("Enter amount to heal (1 - 1000, 0 to cancel) [0]: ", 1, 1000, 0);
+            CurrentCharacter.Heal(healAmount);
+        }
 
-            // OPGLET: De Menu-methode controleert op juiste invoer.
-            //
-            // Als je rechtstreeks invoer van de Console zou lezen,
-            // dan zou je hier extra validatie moeten toevoegen (keuze >=1 && keuze <= PLayers.Count)
-            // om ervoor te zorgen dat je niet buiten de grenzen van de lijst gaat.
-            if (keuze != 0)
-            {
-                Player otherPlayer = Players[keuze - 1];
+        private static void DamageCharacter()
+        {
+            bool continueLoop = true;
 
-                // eerste personage van de gekozen speler zoeken
-                // Noot: dit kan efficiënter met LINQ, maar dat is op dit punt in de cursus nog niet behandeld.
-                foreach (Character character in Characters)
+            while (continueLoop)
+            {
+                int damageAmount = ConsoleInput.ReadInt("Enter amount of damage (1 - 1000, 0 to cancel) [0]: ", 1, 1000, 0);
+                try
                 {
-                    if (character.Player == otherPlayer)
+                    CurrentCharacter.Damage(damageAmount);
+                    continueLoop = false;
+                }
+                catch (DamageTooHighException e)
+                {
+                    ConsoleInput.ShowError(e.Message);
+                    char retry = ConsoleInput.ReadChar("Do you want to try again? (Y/N) [N]: ");
+                    Console.WriteLine();
+                    if (retry != 'Y')
                     {
-                        CurrentCharacter = character;
-                        break;
+                        continueLoop = false;
                     }
                 }
-
-                // CurrentCharacter is niet veranderd, dus speler heeft nog geen personages
-                if (CurrentCharacter.Player != otherPlayer)
-                {
-                    ConsoleInput.ShowError("The selected player has no characters yet. Please create a new character for this player first.");
-                    Console.Write("Press <ENTER> to continue with current player...");
-                    Console.ReadLine();
-                }
-                else
-                {
-                    CurrentPlayer = otherPlayer;
-                }
             }
+        }
+
+        private static bool AddCharacterForPlayer(Player player)
+        {
+            ConsoleDraw.DrawBox("Create new character");
+            switch (ConsoleInput.Menu(["Mage", "Warrior"], "Cancel"))
+            {
+                case 1:
+                    NewMage(player);
+                    return true;
+                case 2:
+                    NewWarrior(player);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private static void NewWarrior(Player player)
+        {
+            string warriorName = ConsoleInput.ReadString("What should this fearsome warrior be called? ");
+            Warrior warrior = new(warriorName, 100, DateTime.Now, 9999, player);
+
+            string weapon = ConsoleInput.ReadString("Add weapon (type weapon name or Q to quit): ");
+            while (!weapon.Equals("Q", StringComparison.CurrentCultureIgnoreCase))
+            {
+                warrior.Weapons.Add(weapon);
+                weapon = ConsoleInput.ReadString("Add weapon: ");
+            }
+            CurrentCharacter = warrior;
+            Characters.Add(CurrentCharacter);
+        }
+
+        private static void NewMage(Player player)
+        {
+            string mageName = ConsoleInput.ReadString("What should this mystical mage be called? ");
+            CurrentCharacter = new Mage(mageName, 100, DateTime.Now, 9999, 10, player);
+            Characters.Add(CurrentCharacter);
         }
 
         private static void SwitchCharacter()
@@ -150,73 +174,75 @@ namespace RpgManagerConsole
             }
         }
 
-        private static void AddCharacter()
+        private static void AddPlayer()
         {
-            ConsoleDraw.DrawBox("Create new Character");
-            switch (ConsoleInput.Menu(["Mage", "Warrior"], "Cancel"))
+            Player newPlayer = new(
+                          ConsoleInput.ReadString("Enter first name: "),
+                          ConsoleInput.ReadString("Enter last name: ")
+                      );
+
+            if (AddCharacterForPlayer(newPlayer))
             {
-                case 1:
-                    NewMage();
-                    break;
-                case 2:
-                    NewWarrior();
-                    break;
-                default:
-                    return;
+                Players.Add(newPlayer);
+                CurrentPlayer = newPlayer;
             }
         }
 
-        private static void NewWarrior()
+        private static void SwitchPlayer()
         {
-            string warriorName = ConsoleInput.ReadString("What should this fearsome warrior be called? ");
-            Warrior warrior = new(warriorName, 100, DateTime.Now, 9999, CurrentPlayer);
-
-            string weapon = ConsoleInput.ReadString("Add weapon (type weapon name or Q to quit): ");
-            while (!weapon.Equals("Q", StringComparison.CurrentCultureIgnoreCase))
+            // same as SwitchCharacter but for players
+            Console.Clear();
+            ConsoleDraw.WriteHeader(CurrentCharacter, CurrentPlayer);
+            ConsoleDraw.DrawBox("Switch Player", fullWidth: true);
+            ConsoleDraw.DrawBox("Select player to switch to", padding: 1);
+            List<string> playerNames = [];
+            foreach (Player player in Players)
             {
-                warrior.Weapons.Add(weapon);
-                weapon = ConsoleInput.ReadString("Add weapon: ");
+                playerNames.Add(player.ToString());
             }
-            CurrentCharacter = warrior;
-            Characters.Add(CurrentCharacter);
-        }
+            int keuze = ConsoleInput.Menu(playerNames, "Cancel");
 
-        private static void NewMage()
-        {
-            string mageName = ConsoleInput.ReadString("What should this mystical mage be called? ");
-            CurrentCharacter = new Mage(mageName, 100, DateTime.Now, 9999, 10, CurrentPlayer);
-            Characters.Add(CurrentCharacter);
-        }
-
-        private static void DamageCharacter()
-        {
-            bool continueLoop = true;
-
-            while (continueLoop)
+            // OPGLET: De Menu-methode controleert op juiste invoer.
+            //
+            // Als je rechtstreeks invoer van de Console zou lezen,
+            // dan zou je hier extra validatie moeten toevoegen (keuze >=1 && keuze <= PLayers.Count)
+            // om ervoor te zorgen dat je niet buiten de grenzen van de lijst gaat.
+            if (keuze != 0)
             {
-                int damageAmount = ConsoleInput.ReadInt("Enter amount of damage (1 - 1000, 0 to cancel) [0]: ", 1, 1000, 0);
-                try
+                Player otherPlayer = Players[keuze - 1];
+
+                // eerste personage van de gekozen speler zoeken
+                // Noot: dit kan efficiënter met LINQ, maar dat is op dit punt in de cursus nog niet behandeld.
+                foreach (Character character in Characters)
                 {
-                    CurrentCharacter.Damage(damageAmount);
-                    continueLoop = false;
-                }
-                catch (DamageTooHighException e)
-                {
-                    ConsoleInput.ShowError(e.Message);
-                    char retry = ConsoleInput.ReadChar("Do you want to try again? (Y/N) [N]: ");
-                    Console.WriteLine();
-                    if (retry != 'Y')
+                    if (character.Player == otherPlayer)
                     {
-                        continueLoop = false;
+                        CurrentCharacter = character;
+                        break;
+                    }
+                }
+
+                if (CurrentCharacter.Player == otherPlayer)
+                {
+                    CurrentPlayer = otherPlayer;
+                }
+                else
+                {
+                    ConsoleInput.ShowError("The selected player has no characters yet. Please create a new character for this player first.");
+                    //Console.Write("Press <ENTER> to continue with current player...");
+                    //Console.ReadLine();
+
+                    char invoer = ConsoleInput.ReadChar("Create new character for this player? ([Y]es/[N]o) [N] ");
+                    if (invoer == 'Y')
+                    {
+                        Console.WriteLine();
+                        if (AddCharacterForPlayer(otherPlayer))
+                        {
+                            CurrentPlayer = otherPlayer;
+                        }
                     }
                 }
             }
-        }
-
-        private static void HealCharacter()
-        {
-            int healAmount = ConsoleInput.ReadInt("Enter amount to heal (1 - 1000, 0 to cancel) [0]: ", 1, 1000, 0);
-            CurrentCharacter.Heal(healAmount);
         }
     }
 }
