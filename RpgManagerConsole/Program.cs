@@ -12,12 +12,15 @@ namespace RpgManagerConsole
 
         static void Main(string[] args)
         {
-            Warrior warrior = new("ZARKAN, the DESTROYER!", 150, DateTime.Now, 100, CurrentPlayer);
+            Players.Add(new Player("Jan", "Janssens"));
+
+            Warrior warrior = new("ZARKAN, the DESTROYER!", 150, DateTime.Now, 100, Players.Last());
             warrior.Weapons.Add("Sword of a Thousand Truths");
             warrior.Weapons.Add("Sting");
             warrior.Weapons.Add("Aperture Science Handheld Portal Device");
             Characters.Add(warrior);
-            
+
+
             bool continueApp = true;
             while (continueApp)
             {
@@ -31,7 +34,8 @@ namespace RpgManagerConsole
                       "Damage",
                       "New Character",
                       "Switch Character",
-                      "Switch Player",
+                      "New Player",
+                      "Switch Player"
                     ],
                     "Quit");
 
@@ -49,6 +53,9 @@ namespace RpgManagerConsole
                     case 4:
                         SwitchCharacter();
                         break;
+                    case 6:
+                        SwitchPlayer();
+                        break;
                     default:
                         continueApp = false;
                         break;
@@ -57,6 +64,54 @@ namespace RpgManagerConsole
 
             Console.ResetColor();
             Console.WriteLine("Bye!");
+        }
+
+        private static void SwitchPlayer()
+        {
+            // same as SwitchCharacter but for players
+            Console.Clear();
+            ConsoleDraw.WriteHeader(CurrentCharacter, CurrentPlayer);
+            ConsoleDraw.DrawBox("Switch Player", fullWidth: true);
+            ConsoleDraw.DrawBox("Select a player to switch to", padding: 1);
+            List<string> playerNames = [];
+            foreach (Player player in Players)
+            {
+                playerNames.Add(player.ToString());
+            }
+            int keuze = ConsoleInput.Menu(playerNames, "Cancel");
+
+            // OPGLET: De Menu-methode controleert op juiste invoer.
+            //
+            // Als je rechtstreeks invoer van de Console zou lezen,
+            // dan zou je hier extra validatie moeten toevoegen (keuze >=1 && keuze <= PLayers.Count)
+            // om ervoor te zorgen dat je niet buiten de grenzen van de lijst gaat.
+            if (keuze != 0)
+            {
+                Player otherPlayer = Players[keuze - 1];
+
+                // eerste personage van de gekozen speler zoeken
+                // Noot: dit kan efficiënter met LINQ, maar dat is op dit punt in de cursus nog niet behandeld.
+                foreach (Character character in Characters)
+                {
+                    if (character.Player == otherPlayer)
+                    {
+                        CurrentCharacter = character;
+                        break;
+                    }
+                }
+
+                // CurrentCharacter is niet veranderd, dus speler heeft nog geen personages
+                if (CurrentCharacter.Player != otherPlayer)
+                {
+                    ConsoleInput.ShowError("The selected player has no characters yet. Please create a new character for this player first.");
+                    Console.Write("Press <ENTER> to continue with current player...");
+                    Console.ReadLine();
+                }
+                else
+                {
+                    CurrentPlayer = otherPlayer;
+                }
+            }
         }
 
         private static void SwitchCharacter()
@@ -73,12 +128,20 @@ namespace RpgManagerConsole
             List<string> characterNames = [];
             foreach (Character character in Characters)
             {
-                characterNames.Add($"{character.Name} ({character.CharacterType})");
+                // enkel personages van de huidige speler tonen
+                // Noot: we willen effectief de ref vergelijken, dat is sneller en
+                // speler mag immers meerdere personages hebben met dezelfde naam
+                if (character.Player == CurrentPlayer)
+                {
+                    characterNames.Add($"{character.Name} ({character.CharacterType})");
+                }
             }
 
             int keuze = ConsoleInput.Menu(characterNames, "Cancel");
 
-            // OPGLET: De Menu-methode controleert op juiste invoer, als je rechtstreeks invoer van de Console zou lezen,
+            // OPGELET: De Menu-methode controleert op juiste invoer.
+            //
+            // Als je rechtstreeks invoer van de Console zou lezen,
             // dan zou je hier extra validatie moeten toevoegen (keuze >=1 && keuze <= Characters.Count)
             // om ervoor te zorgen dat je niet buiten de grenzen van de lijst gaat.
             if (keuze != 0)
@@ -154,6 +217,6 @@ namespace RpgManagerConsole
         {
             int healAmount = ConsoleInput.ReadInt("Enter amount to heal (1 - 1000, 0 to cancel) [0]: ", 1, 1000, 0);
             CurrentCharacter.Heal(healAmount);
-        }       
+        }
     }
 }
