@@ -146,10 +146,15 @@ namespace RpgManagerConsole
             ConsoleDraw.DrawBox("Switch Character", fullWidth: true);
             ConsoleDraw.DrawBox("Select a character to switch to", padding: 1);
 
-            // Aanmaken van de lijst kan gemakkelijker met LINQ, maar dat is op dit punt in de cursus nog niet behandeld.
-            // Ter referentie, volgende 5 regels kunnen vervangen worden door:
-            //      List<string> characterNames = Characters.Select(c => $"{c.Name} ({c.CharacterType})").ToList();
-            List<string> characterNames = [];
+            // Ter info: volgende code kan gemakkelijker met LINQ, maar dat is op dit punt in de cursus nog niet behandeld.
+            // Met LINQ kan de rest van deze methode vervangen volgen met deze code:
+            //    var list = Characters.Where(c => c.Player == CurrentPlayer);
+            //    int keuze = ConsoleInput.Menu(list.Select(c => $"{c.Name} ({c.CharacterType})").ToList(), "Cancel");
+            //    if (keuze != 0)
+            //    {
+            //        CurrentCharacter = list.ElementAt(keuze - 1);
+            //    }
+            Dictionary<Character, string> playerCharacters = [];
             foreach (Character character in Characters)
             {
                 // enkel personages van de huidige speler tonen
@@ -157,11 +162,11 @@ namespace RpgManagerConsole
                 // speler mag immers meerdere personages hebben met dezelfde naam
                 if (character.Player == CurrentPlayer)
                 {
-                    characterNames.Add($"{character.Name} ({character.CharacterType})");
+                    playerCharacters.Add(character, $"{character.Name} ({character.CharacterType})");
                 }
             }
 
-            int keuze = ConsoleInput.Menu(characterNames, "Cancel");
+            int keuze = ConsoleInput.Menu(playerCharacters.Values.ToList(), "Cancel");
 
             // OPGELET: De Menu-methode controleert op juiste invoer.
             //
@@ -170,7 +175,7 @@ namespace RpgManagerConsole
             // om ervoor te zorgen dat je niet buiten de grenzen van de lijst gaat.
             if (keuze != 0)
             {
-                CurrentCharacter = Characters[keuze - 1];
+                CurrentCharacter = playerCharacters.ElementAt(keuze - 1).Key;
             }
         }
 
